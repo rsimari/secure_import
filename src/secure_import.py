@@ -1,5 +1,9 @@
-'''Program that imports and verifies a python module
-'''
+"""Program that imports and verifies a python module
+
+"""
+
+__author__ = 'rsimari'
+__version__ = '0.1'
 
 import os
 import sys
@@ -28,13 +32,23 @@ class SecureModule:
         return self.namespace.keys()
 
     def __repr__(self):
-        return '<Module %r in %r>' % (self.__name__, self.__file__)
+        return '<SecureModule %r in %r>' % (self.__name__, self.__file__)
+
+    @property
+    def digest(self): # TODO
+        'Return digest of module'
+        return ''
+
+    @property
+    def public_key(self): # TODO
+        'Return public key to be used to verify signature'
+        return ''
 
 
 def secure_import(modname):
     # TODO: get module, hash, and public key
     # TODO: call verify_sig()
-    
+
     fullname = '' # used as a default value, if its set the module is remote
     # checks if import is a remote file
     if modname.startswith(('http://', 'https://')):
@@ -73,6 +87,9 @@ def secure_import(modname):
         __package__ = '',
         __loader__ = 'secure_import.py'
     )
+
+    # TODO: verification needs to happen before exec
+
     exec(code, namespace) # namespace -> locals(), this puts the locals()
                           # from the code into namespace
                           # we changed this to namespace for both so we

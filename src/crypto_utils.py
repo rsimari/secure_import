@@ -3,6 +3,7 @@
 """
 
 # TODO: add doctest functionality
+# TODO: add tests
 
 __author__ = 'rsimari'
 __version__ = '0.1'
@@ -12,6 +13,41 @@ from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256 
 from base64 import b64encode, b64decode
 from os import path
+
+
+def gen_key_pair(bits=2048):
+    'Generate a RSA key pair'
+    """
+    :param: bits: (int) size of key to generate
+    :return: (private_key, public_key): (bytes, bytes) key data
+    """
+    new_key = RSA.generate(bits, e=65537) 
+    public_key = new_key.publickey().exportKey("PEM") 
+    private_key = new_key.exportKey("PEM") 
+
+    return private_key, public_key
+
+
+def write_key(key_data, file_name):
+    'Write RSA key to file'
+    """
+    :param: key_data: (bytes) key data
+    :param: file_name: (string) name of key file 
+    """
+    with open(file_name, 'wb+') as key_file:
+        key_file.write(key_data)
+
+
+def write_keys(private_key, private_file, public_key, public_file):
+    'Write RSA key pair to files'
+    """
+    :param: private_key: (bytes) private key data
+    :param: private_file: (string) name of private key file
+    :param: public_key: (bytes) public key data
+    :param: public_file: (string) name of public key file
+    """
+    write_key(private_key, private_file)
+    write_key(public_key, public_file)
 
 
 def load_keys(private_file, public_file):
@@ -26,11 +62,12 @@ def load_keys(private_file, public_file):
 
     return private_key, public_key
 
+
 def load_key(file_name):
     'Load RSA key from a file'
     """
     :param: file_name: (string) file name of key
-    :retur:n key: (bytes) key data
+    :return: key: (bytes) key data
     """
     try:
         with open(file_name, 'rb') as key_file:
@@ -39,44 +76,13 @@ def load_key(file_name):
     except FileNotFoundError:
         return None
 
-def write_key(key_data, file_name):
-    'Write RSA key to file'
-    """
-    :param: key_data: (bytes) key data
-    :param: file_name: (string) name of key file 
-    """
-    with open(file_name, 'wb+') as key_file:
-        key_file.write(key_data)
-
-def write_keys(private_key, private_file, public_key, public_file):
-    'Write RSA key pair to files'
-    """
-    :param: private_key: (bytes) private key data
-    :param: private_file: (string) name of private key file
-    :param: public_key: (bytes) public key data
-    :param: public_file: (string) name of public key file
-    """
-    write_key(private_key, private_file)
-    write_key(public_key, public_file)
-
-def gen_key_pair(bits=2048):
-    'Generate a RSA key pair'
-    """
-    :param: bits: (int) size of key to generate
-    :retur:n (private_key, public_key): (bytes, bytes) key data
-    """
-    new_key = RSA.generate(bits, e=65537) 
-    public_key = new_key.publickey().exportKey("PEM") 
-    private_key = new_key.exportKey("PEM") 
-
-    return private_key, public_key
 
 def sign_file(private_key, module_file):
     'Cryptographically sign given module'
     """
     :param: private_key: (bytes) private key data
     :param: module_file: (string) name of module file
-    :retur:n (digest, signature): (Crypto.Hash.SHA256.SHA256Hash, bytes)
+    :return: (digest, signature): (Crypto.Hash.SHA256.SHA256Hash, bytes)
         digest of module and signed digest
     """
     try:
@@ -103,7 +109,7 @@ def verify_sig(public_key, digest, signature):
     :param: public_key: (bytes) public key data
     :param: digest: (Crypto.Hash.SHA256.SHA256Hash) digest of module
     :param: signature: (bytes) signed digest
-    :retur:n True/False: (Bool) True indicates a successful verification
+    :return: True/False: (Bool) True indicates a successful verification
     """
     try:
         key = RSA.import_key(public_key)
