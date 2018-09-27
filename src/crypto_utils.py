@@ -2,18 +2,23 @@
 
 """
 
+# TODO: i need to do a key exchange to get a symmetric key, using asymmetric keys
 # TODO: add doctest functionality
 # TODO: add tests
+# TODO: Salse20 does not guarantee authenticity, use HMAC for that!
 
 __author__ = 'rsimari'
 __version__ = '0.1'
 
 from Crypto.PublicKey import RSA 
 from Crypto.Signature import pkcs1_15
+from Crypto.Cipher import Salsa20
 from Crypto.Hash import SHA256 
 from base64 import b64encode, b64decode
 from os import path
 
+
+NONCE_LEN = 8
 
 def gen_key_pair(bits=2048):
     'Generate a RSA key pair'
@@ -118,6 +123,38 @@ def verify_sig(public_key, digest, signature):
     except (ValueError, TypeError):
         return False
 
+def encrypt_data(data, key):
+    'Encrypts a file with a key, assumes you have a shared symmetric key'
+    """
+    """
+    if len(key) != 16 and len(key) != 32:
+        raise ValueError("Key must of length 16 or 32 bytes")
+        
+    # creates cipher which can encrypt and product 8 byte nonce
+    cipher = Salsa20.new(key)
+    return cipher.nonce + cipher.encrypt(data)
+
+
+def decrypt_data(enc_data, key):
+    'Decrypts data with a shared symmetric key'
+    """
+    """
+    if len(key) != 16 and len(key) != 32:
+        raise ValueError("Key must of length 16 or 32 bytes")
+
+    nonce = enc_data[:NONCE_LEN]
+    cipher_text = enc_data[NONCE_LEN:]
+
+    cipher = Salsa20.new(key, nonce)
+    return cipher.decrypt(cipher_text)
+
+
+def hex_to_char(bytes_str):
+    'Converts hex to char'
+    """
+    """
+    # chars = map(ord, )
+
 
 if __name__ == "__main__":
 
@@ -146,8 +183,21 @@ if __name__ == "__main__":
     
     # quick verify test
     if verify_sig(public_key, digest, sig):
-        print("Successful verification")
+        print("Successful Signature Verification")
     else:
-        print("Could not verify")
+        print("Could Not Verify")
+
+    key = b'aaaaaaaaaaaaaaaa'
+
+    # run encryption test
+    before_module = open(module_file, 'rb').read()
+    enc = encrypt_data(before_module, key)
+
+    after_module = decrypt_data(enc, key)
+    
+    if before_module == after_module:
+        print("Crypto Test Successful!")
+    else:
+        print("Something went wrong :(")
 
 
