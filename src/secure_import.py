@@ -133,7 +133,7 @@ def reload(module):
 if __name__ == '__main__':
 
 
-    sys.path.append('./test/')
-    public_key, signature = get_key_sig("test/public_key.pem", "test/signature.pem")
+    sys.path.append('../test/')
+    public_key, signature = get_key_sig("../test/public_key.pem", "../test/signature.pem")
     secure_import('test_module', public_key, signature)
     s = test_module.SecureTest()

@@ -161,7 +161,7 @@ def decrypt_data(enc_data, key):
 
 if __name__ == "__main__":
 
-    test_dir = 'test'
+    test_dir = '../test'
     key_ext = '.pem'
     private_file = "private_key" + key_ext
     private_path = path.join(test_dir, private_file)
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     else:
         print("Could Not Verify")
 
-    write_signature(sig, "test/signature.pem")
+    write_signature(sig, "../test/signature.pem")
 
     key = b'aaaaaaaaaaaaaaaa'
 
