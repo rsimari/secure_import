@@ -2,10 +2,8 @@
 
 """
 
-# TODO: i need to do a key exchange to get a symmetric key, using asymmetric keys
 # TODO: add doctest functionality
 # TODO: add tests
-# TODO: Salse20 does not guarantee authenticity, use HMAC for that!
 
 __author__ = 'rsimari'
 __version__ = '0.1'
