@@ -8,9 +8,9 @@ install:
   - pip install -r requirements.txt
 # command to run tests
 script:
-  - pytest --cov=./
+  - pytest 
 # test coverage stuff
 before_install:
   - pip install codecov
 after_success:
-  - bash < (curl -s https://codecov.io/bash)
+  - py.test --cov=src test/
