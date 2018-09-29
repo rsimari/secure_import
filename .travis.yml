@@ -14,3 +14,7 @@ before_install:
   - pip install codecov
 after_success:
   - py.test --cov=src test/
+
+# environment variables
+env:
+  - CODECOV_TOKEN="c6c00ecd-ca48-4248-91ef-761c77d5e559"
