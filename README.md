@@ -5,6 +5,6 @@ A package for securely importing python modules
 [![Test Coverage](https://codecov.io/gh/codecov/secure_import/branch/master/graph/badge.svg)](https://codecov.io/gh/codecov/secure_import)
 [![HitCount](http://hits.dwyl.com/rsimari/secure_import.svg)](http://hits.dwyl.com/rsimari/secure_import)
 
-### Test Suite
-`$ pytest`
+### Usage
+
 
