@@ -55,6 +55,16 @@ def write_keys(private_key, private_file, public_key, public_file):
     write_key(public_key, public_file)
 
 
+def write_signature(sig_data, file_name): # this is the same as write_key() ?
+    'Writes a signature to a file'
+    """
+    :param: key_data: (bytes) signature data
+    :param: file_name: (string) name of key file 
+    """
+    with open(file_name, 'wb+') as sig_file:
+        sig_file.write(sig_data)   
+
+
 def load_keys(private_file, public_file):
     'Load RSA key pair from files'
     """
@@ -82,25 +92,22 @@ def load_key(file_name):
         return None
 
 
-def sign_file(private_key, module_file):
-    'Cryptographically sign given module'
+def hash_data(data):
+    return SHA256.new(bytearray(data))
+
+
+def sign_data(private_key, data):
+    'Cryptographically sign given data'
     """
     :param: private_key: (bytes) private key data
-    :param: module_file: (string) name of module file
+    :param: module_file: (string) data to be signed
     :return: (digest, signature): (Crypto.Hash.SHA256.SHA256Hash, bytes)
         digest of module and signed digest
     """
-    try:
-        data = open(module_file, "rb").read()
-    except FileNotFoundError:
-        print("No Module File Found")
-        return None, None
-
-    digest = SHA256.new(bytearray(data))
+    digest = hash_data(data)
     try:
         key = RSA.import_key(private_key) # TODO: can probably be factored out
         signature = pkcs1_15.new(key).sign(digest)
-        print(type(signature))
     except (KeyError, ValueError):
         print("Unable to sign module")
         return None, None
@@ -108,20 +115,22 @@ def sign_file(private_key, module_file):
     return digest, signature
 
 
-def verify_sig(public_key, digest, signature):
+def verify_sig(data, public_key, signature):
     'Verify signature of digest with public key'
     """
+    :param: data: (string) data to be verified
     :param: public_key: (bytes) public key data
-    :param: digest: (Crypto.Hash.SHA256.SHA256Hash) digest of module
     :param: signature: (bytes) signed digest
     :return: True/False: (Bool) True indicates a successful verification
     """
+    digest = hash_data(data)
     try:
         key = RSA.import_key(public_key)
         pkcs1_15.new(key).verify(digest, signature)
         return True
     except (ValueError, TypeError):
         return False
+
 
 def encrypt_data(data, key):
     'Encrypts a file with a key, assumes you have a shared symmetric key'
@@ -149,12 +158,6 @@ def decrypt_data(enc_data, key):
     return cipher.decrypt(cipher_text)
 
 
-def hex_to_char(bytes_str):
-    'Converts hex to char'
-    """
-    """
-    # chars = map(ord, )
-
 
 if __name__ == "__main__":
 
@@ -177,15 +180,23 @@ if __name__ == "__main__":
         write_keys(private_key, private_path, public_key, public_path)
     
     # sign test module
-    digest, sig = sign_file(private_key, module_file)
+    try:
+        code = open(module_file, "rb").read()
+    except FileNotFoundError:
+        print("No Module File Found")
+        quit()
+
+    digest, sig = sign_data(private_key, code)
     if digest is None or sig is None:
         quit()
     
     # quick verify test
-    if verify_sig(public_key, digest, sig):
+    if verify_sig(code, public_key, sig):
         print("Successful Signature Verification")
     else:
         print("Could Not Verify")
+
+    write_signature(sig, "test/signature.pem")
 
     key = b'aaaaaaaaaaaaaaaa'
 

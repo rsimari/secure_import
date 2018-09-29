@@ -1,6 +1,8 @@
-"""Program that imports and verifies a python module
+"""Program that imports and cryptographically verifies a python module
 
 """
+
+# TODO: add . syntax for directory searches for module file
 
 __author__ = 'rsimari'
 __version__ = '0.1'
@@ -9,6 +11,7 @@ import os
 import sys
 from contextlib import suppress
 import urllib.request
+from crypto_utils import *
 
 modules = {}      # emulate sys.modules
 
@@ -35,7 +38,7 @@ class SecureModule:
         return '<SecureModule %r in %r>' % (self.__name__, self.__file__)
 
     @property
-    def digest(self): # TODO
+    def signature(self): # TODO
         'Return digest of module'
         return ''
 
@@ -45,21 +48,35 @@ class SecureModule:
         return ''
 
 
-def secure_import(modname):
-    # TODO: get module, hash, and public key
-    # TODO: call verify_sig()
+def get_key_sig(key_file, sig_file):
+    try:
+        key = open(key_file, "rb").read()
+    except FileNotFoundError:
+        print("Could Not Find Key File")
+        return None, None
+
+    try:
+        sig = open(sig_file, "rb").read()
+    except FileNotFoundError:
+        print("Could Not Find Signature File")
+        return key, None
+
+    return key, sig
+
+
+def secure_import(modname, public_key, signature):
+    'Securely import module'
 
     fullname = '' # used as a default value, if its set the module is remote
     # checks if import is a remote file
     if modname.startswith(('http://', 'https://')):
         fullname = modname                          # at this point its the entire url
         _, basename = fullname.rsplit('/', 1)       # splits the url from file name
-        modname, ext = os.path.splitext(basename)   # splits the extension in the file name
+        modname, ext = os.path.splitext(basename)   # splits the extension in the file name        
 
     # check to see if the module has been cached
     if modname in modules:
         globals()[modname] = modules[modname] # assign it in global() to be used
-
         return
 
     # if module is from remote source
@@ -72,7 +89,7 @@ def secure_import(modname):
         for dirname in sys.path:
             fullname = os.path.join(dirname, filename)
             with suppress(FileNotFoundError):  # ignore file not found errors
-                with open(fullname) as f:      # try to open the file
+                with open(fullname, 'rb') as f:      # try to open the file
                     code = f.read()
                 break                          # if it gets to this line a file
                                                # has been found
@@ -80,7 +97,6 @@ def secure_import(modname):
             raise ModuleNotFoundError(f'No module name {modname!r}')
 
 
-    # cleaner way of creating a dict
     namespace = dict(
         __name__ = modname,
         __file__ = fullname,
@@ -88,7 +104,10 @@ def secure_import(modname):
         __loader__ = 'secure_import.py'
     )
 
-    # TODO: verification needs to happen before exec
+    if not verify_sig(code, public_key, signature):
+        # TODO: raise something here?
+        print(f'{modname!r} could not be verified')
+        quit()
 
     exec(code, namespace) # namespace -> locals(), this puts the locals()
                           # from the code into namespace
@@ -103,13 +122,18 @@ def secure_import(modname):
     globals()[modname] = mod         # this makes the module globally acessible
                                      # just like a normal module
 
+"""
 def reload(module):
     modname = module.__name__  # get name of module
     modules.pop(modname, None) # remove from modules cache, return None if its not there
     secure_import(modname)         # import the module again
     return modules[modname]
+"""
 
 if __name__ == '__main__':
 
-    # now with secure_import
-    secure_import('sample')
+
+    sys.path.append('./test/')
+    public_key, signature = get_key_sig("test/public_key.pem", "test/signature.pem")
+    secure_import('test_module', public_key, signature)
+    s = test_module.SecureTest()
