@@ -1,0 +1,9 @@
+{
+  "name": "Secure Import",
+  "description": "Python Module For Securely Importing Modules",
+  "author": "rsimari",
+  "version": "0.1",
+  "scripts": {
+    "test": "pytest"
+  }
+}
