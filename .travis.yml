@@ -7,3 +7,8 @@ install:
 # command to run tests
 script:
   - pytest
+# test coverage stuff
+before_install:
+  - pip install --user codecov
+after_success:
+  - codecov --file coverage/lcov.info --disable search
