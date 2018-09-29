@@ -11,7 +11,7 @@ __version__ = '0.1'
 from Crypto.PublicKey import RSA 
 from Crypto.Signature import pkcs1_15
 from Crypto.Cipher import Salsa20
-from Crypto.Hash import SHA256 
+from Crypto.Hash import SHA512 
 from base64 import b64encode, b64decode
 from os import path
 
@@ -91,7 +91,7 @@ def load_key(file_name):
 
 
 def hash_data(data):
-    return SHA256.new(bytearray(data))
+    return SHA512.new(bytearray(data))
 
 
 def sign_data(private_key, data):
