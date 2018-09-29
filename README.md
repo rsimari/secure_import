@@ -1,9 +1,7 @@
 # secure_import
 A package for securely importing python modules
 
-### TODO
-1. I need a metaclass to save the digest of the module and public key
-2. implement doctest for functions (setup testing)
+[![Build Status](https://travis-ci.org/rsimari/secure_import.png?branch=master)](https://travis-ci.org/rsimari/secure_import)
 
 ### Test Suite
 `$ pytest`
