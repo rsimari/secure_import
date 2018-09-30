@@ -6,6 +6,7 @@ path.append(os.path.join(os.getcwd(), 'src'))
 from secure_build import secure_build
 
 def test_secure_build_default():
+	# TODO: these should be mocked files!
 	module_file = 'test/test_module.py'
 	private_key_file = 'test/private_key.pem'
 	public_key_file = 'test/public_key.pem'

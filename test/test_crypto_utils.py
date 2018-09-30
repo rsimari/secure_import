@@ -15,19 +15,39 @@ def test_gen_key_pair():
 
 def test_write_key(tmpdir):
 	key_data = bytearray(256) # 2048 / 8
-	file_name = tmpdir.join('some_key.pem') # mock writing to file
+	file_name = tmpdir.join('some_key.pem') # mock a file
 
 	write_key(key_data, str(file_name))
-	assert file_name.read() == key_data.decode()
+	file_contents = file_name.read()
+	assert len(file_contents) > 0
+	assert file_contents == key_data.decode()
 
-def test_write_keys():
-	pass
+def test_write_keys(tmpdir):
+	pub_file = tmpdir.join('some_key.pem') 
+	pri_file = tmpdir.join('another_key.pem')
+
+	pub_key = bytearray(256)
+	pri_key = bytearray(256)
+
+	write_keys(pri_key, pri_file, pub_key, pub_file)
+	pri_contents = pri_file.read()
+	pub_contents = pub_file.read()
+	assert len(pri_contents) > 0
+	assert pri_contents == pri_key.decode()
+	assert len(pub_contents) > 0
+	assert pub_contents == pub_key.decode()
+
 
 def test_write_signature():
 	pass
 
 def test_load_key():
 	pass
+
+def test_load_key_no_file():
+	key_file = 'not_a_file.pem'
+	key = load_key(key_file)
+	assert key == None
 
 def test_load_keys():
 	pass
