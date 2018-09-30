@@ -3,10 +3,10 @@
 """
 
 # TODO: add doctest functionality
-# TODO: add tests
 
 __author__ = 'rsimari'
 __version__ = '0.1'
+# __all__ = ['']
 
 from Crypto.PublicKey import RSA 
 from Crypto.Signature import pkcs1_15
@@ -63,19 +63,6 @@ def write_signature(sig_data, file_name): # this is the same as write_key() ?
         sig_file.write(sig_data)   
 
 
-def load_keys(private_file, public_file):
-    'Load RSA key pair from files'
-    """
-    :param: private_file: (string) file name of private key
-    :param: public_file: (string) file name of public key
-    :return: private_key, public_key: (bytes, bytes) key data
-    """
-    private_key = load_key(private_file)
-    public_key = load_key(public_file)
-
-    return private_key, public_key
-
-
 def load_key(file_name):
     'Load RSA key from a file'
     """
@@ -88,6 +75,19 @@ def load_key(file_name):
         return key
     except FileNotFoundError:
         return None
+
+
+def load_keys(private_file, public_file):
+    'Load RSA key pair from files'
+    """
+    :param: private_file: (string) file name of private key
+    :param: public_file: (string) file name of public key
+    :return: private_key, public_key: (bytes, bytes) key data
+    """
+    private_key = load_key(private_file)
+    public_key = load_key(public_file)
+
+    return private_key, public_key
 
 
 def hash_data(data):

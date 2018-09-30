@@ -2,7 +2,10 @@
 
 """
 
+# TODO: create secure_build
 # TODO: add . syntax for directory searches for module file
+
+
 
 __author__ = 'rsimari'
 __version__ = '0.1'

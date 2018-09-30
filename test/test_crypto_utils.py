@@ -7,7 +7,11 @@ path.append(os.path.join(os.getcwd(), 'src'))
 from crypto_utils import *
 
 def test_gen_key_pair():
-	assert gen_key_pair() != None, None
+	pub, pri = gen_key_pair()
+	assert pub != None
+	assert pri != None
+	assert len(pub) > 0
+	assert len(pri) > 0
 
 def test_write_key(tmpdir):
 	key_data = bytearray(256) # 2048 / 8
@@ -19,6 +23,30 @@ def test_write_key(tmpdir):
 def test_write_keys():
 	pass
 
+def test_write_signature():
+	pass
+
+def test_load_key():
+	pass
+
+def test_load_keys():
+	pass
+
 def test_hash_data():
 	data = bytearray(2048)
-	assert hash_data(data) != None
+	_hash = hash_data(data)
+	assert _hash != None
+	assert isinstance(_hash, SHA512.SHA512Hash)
+
+def test_sign_data():
+	pass
+
+def test_verify_sig():
+	pass
+
+def test_encrypt_data():
+	pass
+
+def test_decrypt_data():
+	pass
+
