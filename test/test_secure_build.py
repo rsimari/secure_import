@@ -24,8 +24,8 @@ def test_secure_build_no_module():
 
 	with pytest.raises(FileNotFoundError) as e_info:
 		signature = secure_build(module_file, private_key_file,
-							 public_key_file,
-							 sig_file_name=sig_file)
+							     public_key_file,
+							     sig_file_name=sig_file)
 
 
 def test_secure_build_no_keys():

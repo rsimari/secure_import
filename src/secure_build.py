@@ -14,8 +14,7 @@ def secure_build(module_file, private_key_file='private_key.pem',
 	try:
 		code = open(module_file, "rb").read()
 	except FileNotFoundError:
-		print("No Module File Found")
-		return None
+		raise FileNotFoundError(f"{module_file!r} Was Not Found")
 
 	# check if key exists, if not generate a key pair
 	private_key, public_key = load_keys(private_key_file, public_key_file)
