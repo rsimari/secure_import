@@ -90,7 +90,9 @@ def load_keys(private_file, public_file):
     return private_key, public_key
 
 
-def hash_data(data):
+def get_hash_obj(data):
+    if isinstance(data, int):
+        raise ValueError("Hash data cannot be of type 'int'")
     return SHA512.new(bytearray(data))
 
 
@@ -102,7 +104,7 @@ def sign_data(private_key, data):
     :return: (digest, signature): (Crypto.Hash.SHA256.SHA256Hash, bytes)
         digest of module and signed digest
     """
-    digest = hash_data(data)
+    digest = get_hash_obj(data)
     try:
         key = RSA.import_key(private_key) # TODO: can probably be factored out
         signature = pkcs1_15.new(key).sign(digest)
@@ -121,7 +123,7 @@ def verify_sig(data, public_key, signature):
     :param: signature: (bytes) signed digest
     :return: True/False: (Bool) True indicates a successful verification
     """
-    digest = hash_data(data)
+    digest = get_hash_obj(data)
     try:
         key = RSA.import_key(public_key)
         pkcs1_15.new(key).verify(digest, signature)
@@ -158,55 +160,56 @@ def decrypt_data(enc_data, key):
 
 
 if __name__ == "__main__":
+    pass
 
-    test_dir = '../test'
-    key_ext = '.pem'
-    private_file = "private_key" + key_ext
-    private_path = path.join(test_dir, private_file)
+    # test_dir = '../test'
+    # key_ext = '.pem'
+    # private_file = "private_key" + key_ext
+    # private_path = path.join(test_dir, private_file)
 
-    public_file = "public_key" + key_ext
-    public_path = path.join(test_dir, public_file)
+    # public_file = "public_key" + key_ext
+    # public_path = path.join(test_dir, public_file)
 
-    module_name = "test_module"
-    module_file = path.join(test_dir, module_name + ".py")
+    # module_name = "test_module"
+    # module_file = path.join(test_dir, module_name + ".py")
 
-    # check if keys exist, if not generate a key pair
-    private_key, public_key = load_keys(private_path, public_path)
-    if private_key is None or public_key is None:
-        print("Generating Keys...")
-        private_key, public_key = gen_key_pair()
-        write_keys(private_key, private_path, public_key, public_path)
+    # # check if keys exist, if not generate a key pair
+    # private_key, public_key = load_keys(private_path, public_path)
+    # if private_key is None or public_key is None:
+    #     print("Generating Keys...")
+    #     private_key, public_key = gen_key_pair()
+    #     write_keys(private_key, private_path, public_key, public_path)
     
-    # sign test module
-    try:
-        code = open(module_file, "rb").read()
-    except FileNotFoundError:
-        print("No Module File Found")
-        quit()
+    # # sign test module
+    # try:
+    #     code = open(module_file, "rb").read()
+    # except FileNotFoundError:
+    #     print("No Module File Found")
+    #     quit()
 
-    digest, sig = sign_data(private_key, code)
-    if digest is None or sig is None:
-        quit()
+    # digest, sig = sign_data(private_key, code)
+    # if digest is None or sig is None:
+    #     quit()
     
-    # quick verify test
-    if verify_sig(code, public_key, sig):
-        print("Successful Signature Verification")
-    else:
-        print("Could Not Verify")
+    # # quick verify test
+    # if verify_sig(code, public_key, sig):
+    #     print("Successful Signature Verification")
+    # else:
+    #     print("Could Not Verify")
 
-    write_signature(sig, "../test/signature.pem")
+    # write_signature(sig, "../test/signature.pem")
 
-    key = b'aaaaaaaaaaaaaaaa'
+    # key = b'aaaaaaaaaaaaaaaa'
 
-    # run encryption test
-    before_module = open(module_file, 'rb').read()
-    enc = encrypt_data(before_module, key)
+    # # run encryption test
+    # before_module = open(module_file, 'rb').read()
+    # enc = encrypt_data(before_module, key)
 
-    after_module = decrypt_data(enc, key)
+    # after_module = decrypt_data(enc, key)
     
-    if before_module == after_module:
-        print("Crypto Test Successful!")
-    else:
-        print("Something went wrong :(")
+    # if before_module == after_module:
+    #     print("Crypto Test Successful!")
+    # else:
+    #     print("Something went wrong :(")
 
 
