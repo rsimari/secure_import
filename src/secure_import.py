@@ -67,7 +67,7 @@ def get_key_sig(key_file, sig_file):
 
 
 def secure_import(modname, public_key, signature):
-    'Securely import module'
+    'Securely import local or remote module'
     """
     :param str modname: name or url of module to import
     :param bytes public_key: RSA public key of module source
