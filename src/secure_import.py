@@ -68,7 +68,11 @@ def get_key_sig(key_file, sig_file):
 
 def secure_import(modname, public_key, signature):
     'Securely import module'
-
+    """
+    :param str modname: name or url of module to import
+    :param bytes public_key: RSA public key of module source
+    :param bytes signature: signature of module 
+    """
     fullname = '' # used as a default value, if its set the module is remote
     # checks if import is a remote file
     if modname.startswith(('http://', 'https://')):
