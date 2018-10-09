@@ -113,7 +113,7 @@ def secure_import(modname, public_key, signature):
     if not verify_sig(code, public_key, signature):
         # TODO: raise something here?
         print(f'{modname!r} could not be verified')
-        quit()
+        return
 
     exec(code, namespace) # namespace -> locals(), this puts the locals()
                           # from the code into namespace
