@@ -2,7 +2,6 @@
 
 """
 
-# TODO: create secure_build
 # TODO: add . syntax for directory searches for module file
 
 
