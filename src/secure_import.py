@@ -5,7 +5,6 @@
 # TODO: add . syntax for directory searches for module file
 
 
-
 __author__ = 'rsimari'
 __version__ = '0.1'
 
@@ -50,22 +49,6 @@ class SecureModule:
         return ''
 
 
-def get_key_sig(key_file, sig_file):
-    try:
-        key = open(key_file, "rb").read()
-    except FileNotFoundError:
-        print("Could Not Find Key File")
-        return None, None
-
-    try:
-        sig = open(sig_file, "rb").read()
-    except FileNotFoundError:
-        print("Could Not Find Signature File")
-        return key, None
-
-    return key, sig
-
-
 def secure_import(modname, public_key, signature):
     'Securely import local or remote module'
     """
@@ -73,12 +56,12 @@ def secure_import(modname, public_key, signature):
     :param bytes public_key: RSA public key of module source
     :param bytes signature: signature of module 
     """
-    fullname = '' # used as a default value, if its set the module is remote
+    fullname = ''
     # checks if import is a remote file
     if modname.startswith(('http://', 'https://')):
-        fullname = modname                          # at this point its the entire url
-        _, basename = fullname.rsplit('/', 1)       # splits the url from file name
-        modname, ext = os.path.splitext(basename)   # splits the extension in the file name        
+        fullname = modname                          
+        _, basename = fullname.rsplit('/', 1)      
+        modname, ext = os.path.splitext(basename)        
 
     # check to see if the module has been cached
     if modname in modules:
@@ -95,10 +78,9 @@ def secure_import(modname, public_key, signature):
         for dirname in sys.path:
             fullname = os.path.join(dirname, filename)
             with suppress(FileNotFoundError):  # ignore file not found errors
-                with open(fullname, 'rb') as f:      # try to open the file
+                with open(fullname, 'rb') as f:     
                     code = f.read()
-                break                          # if it gets to this line a file
-                                               # has been found
+                break                       
         else:
             raise ModuleNotFoundError(f'No module name {modname!r}')
 
@@ -111,35 +93,22 @@ def secure_import(modname, public_key, signature):
     )
 
     if not verify_sig(code, public_key, signature):
-        # TODO: raise something here?
-        print(f'{modname!r} could not be verified')
-        return
+        raise ImportError("Could not verify module signature")
 
     exec(code, namespace) # namespace -> locals(), this puts the locals()
-                          # from the code into namespace
-                          # we changed this to namespace for both so we
-                          # can have __builtins__ in the dir()
-                          # we want __builtins__ because then we can use
-                          # them in our python module that we are loading
     mod = modules[modname] = SecureModule(namespace) # this saves the module so it can be cached
-                                                     # this saves computation if the module gets
-                                                     # imported more than once in a program
 
-    globals()[modname] = mod         # this makes the module globally acessible
-                                     # just like a normal module
+    globals()[modname] = mod # this makes the module globally acessible
 
-"""
-def reload(module):
-    modname = module.__name__  # get name of module
-    modules.pop(modname, None) # remove from modules cache, return None if its not there
-    secure_import(modname)         # import the module again
-    return modules[modname]
-"""
 
 if __name__ == '__main__':
 
 
     sys.path.append('../test/')
-    public_key, signature = get_key_sig("../test/public_key.pem", "../test/signature.pem")
-    secure_import('test_module', public_key, signature)
+    key_file = os.path.join('..', 'test', 'public_key.pem')
+    sig_file = os.path.join('..', 'test', 'signature.pem')
+    module_name = 'test_module'
+
+    public_key, signature = get_key_sig(key_file, sig_file)
+    secure_import(module_name, public_key, signature)
     s = test_module.SecureTest()

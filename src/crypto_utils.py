@@ -157,7 +157,20 @@ def decrypt_data(enc_data, key):
     cipher = Salsa20.new(key, nonce)
     return cipher.decrypt(cipher_text)
 
+def get_key_sig(key_file, sig_file):
+    try:
+        key = open(key_file, "rb").read()
+    except FileNotFoundError:
+        print("Could Not Find Key File")
+        return None, None
 
+    try:
+        sig = open(sig_file, "rb").read()
+    except FileNotFoundError:
+        print("Could Not Find Signature File")
+        return key, None
+
+    return key, sig
 
 if __name__ == "__main__":
     pass
