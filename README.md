@@ -13,9 +13,10 @@ module_file = 'test/test_module.py'
 private_key_file = 'test/private_key.pem'
 public_key_file = 'test/public_key.pem'
 sig_file = 'test/signature.pem'
-signature = secure_build(module_file, private_key_file,
-             public_key_file,
-             sig_file_name=sig_file)
+signature = secure_build(module_file, 
+                         private_key_file,
+                         public_key_file,
+                         sig_file_name=sig_file)
 ```
 
 Import Module:
