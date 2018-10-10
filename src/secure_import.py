@@ -95,7 +95,7 @@ def secure_import(modname, public_key, signature):
     if not verify_sig(code, public_key, signature):
         raise ImportError("Could not verify module signature")
 
-    exec(code, namespace) # namespace -> locals(), this puts the locals()
+    exec(code, namespace) 
     mod = modules[modname] = SecureModule(namespace) # this saves the module so it can be cached
 
     globals()[modname] = mod # this makes the module globally acessible
