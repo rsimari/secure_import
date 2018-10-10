@@ -8,7 +8,7 @@ A package for securely importing signed python modules
 
 Build Module:
 
-```
+```python
 module_file = 'test/test_module.py'
 private_key_file = 'test/private_key.pem'
 public_key_file = 'test/public_key.pem'
